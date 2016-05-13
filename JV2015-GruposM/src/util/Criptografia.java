@@ -21,8 +21,8 @@ public class Criptografia {
 	 * @return textoEncriptado. 
 	 */
 	public static String cesar(String textoClaro) {
-		String alfaNormal =     "AaBbCcDdEeFfGgHhIiJjKkLlMmNnÑñOoPpQqRrSsTtUuVvXxYyZz0123456789!?$%&/";
-		String alfaDesplazado = "EeFfGgHhIiJjKkLlMmNnÑñOoPpQqRrSsTtUuVvXxYyZz0123456789!?$%&/AaBbCcDd";
+		String alfaNormal =     "AaBbCcDdEeFfGgHhIiJjKkLlMmNnÑñOoPpQqRrSsTtUuVvXxYyZz0123456789!?$%&/#";
+		String alfaDesplazado = "EeFfGgHhIiJjKkLlMmNnÑñOoPpQqRrSsTtUuVvXxYyZz0123456789!?$%&/#AaBbCcDd";
 		char charAEncriptar;
 		int posCharAEncriptar;
 		StringBuilder  textoEncriptado = new StringBuilder();

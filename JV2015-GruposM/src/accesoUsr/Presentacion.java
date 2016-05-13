@@ -1,14 +1,4 @@
 package accesoUsr;
-/** Proyecto: Juego de la vida.
- *  
- *  Organiza el acceso y la interacción con el usuario:  
- *  @since: prototipo1.2
- *  @source:Presentacion.java 
- *  @version: 1.0 - 19/02/2016 
- *  @author: ajp
- */
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.Scanner;
 
 import accesoDato.Datos;
@@ -24,6 +14,8 @@ public class Presentacion {
 	final int CICLOS = 120;
 	private Scanner teclado = new Scanner(System.in);	//Entrada por consola
 	private byte[][] mundo;
+	
+	private Datos datos = Datos.getInstancia();
 	
 	/**
 	 * Constructor
@@ -67,7 +59,7 @@ public class Presentacion {
 			String clave = teclado.nextLine();
 			
 			// Obtiene idUsr que corresponde
-			credencialUsr = datos.equivalenciaId(credencialUsr);	
+			credencialUsr = datos.getEquivalenciaId(credencialUsr);	
 			
 			// Busca usuario coincidente con credencial
 			System.out.println(credencialUsr);

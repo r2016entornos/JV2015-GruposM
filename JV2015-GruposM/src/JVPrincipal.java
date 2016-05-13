@@ -7,23 +7,23 @@
  * @author: ajp
  */
 
-import java.util.Date;
-import java.util.Scanner;
-
 import accesoDato.Datos;
+import accesoDato.test.DatosPrueba;
 import accesoUsr.Presentacion;
-import modelo.*;
 
 public class JVPrincipal {	
 	public static void main(String[] args) {				
-		Datos datos = new Datos();
+		final int  MAX_USUARIOS_PRUEBA = 10;
+		Datos datos = Datos.getInstancia();
+		DatosPrueba.cargarUsuariosPrueba(MAX_USUARIOS_PRUEBA);
+		
 		Presentacion presentacion = new Presentacion();
 		
 		presentacion.mostrar(datos.textoDatosUsuarios());
 
 		if (presentacion.iniciarSesion(datos)) {
 			presentacion.arrancarSimulacion();
-		}
+		}	
 	}
 
 } //class
