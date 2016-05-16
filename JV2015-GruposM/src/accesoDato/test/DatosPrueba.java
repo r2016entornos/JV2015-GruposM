@@ -36,13 +36,14 @@ public class DatosPrueba {
 	 * Genera datos de prueba válidos dentro 
 	 * del almacén de datos.
 	 * @param numero - el número de usuarios a generar.
+	 * @throws DatosException 
 	 */
 	public static void cargarUsuariosPrueba(int numero) {
 		for (int i = 0; i < numero; i++) {
 			Usuario usr =  new Usuario(new Nif("0234455"+i+"K"), "Pepe" + i,
 					"López Pérez" +i, new Direccion("30012", "Alta", "10", "Murcia", "España"), 
 					new Correo("pepe" + i + "@gmail.com"), new Fecha(1990, 11, 12), 
-					new Fecha(2014, 12, 3), new Contraseña("Miau#" + i), RolUsuario.NORMAL);		
+					new Fecha(2014, 12, 3), new Contraseña("Miau#" + i), RolUsuario.NORMAL);				
 			try {
 				datos.altaUsuario(usr);
 			} catch (AccesoDatosException e) {
@@ -90,7 +91,6 @@ public class DatosPrueba {
 	 * @param numero - el número de patrones a generar.
 	 */
 	public static void cargarPatronesPrueba(int numero) {
-
 		for (int i = 0; i < numero; i++) {
 			Patron patron = new Patron();
 			patron.setNombre("Patron" + i);

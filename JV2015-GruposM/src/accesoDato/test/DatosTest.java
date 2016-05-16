@@ -35,6 +35,7 @@ public class DatosTest {
 	public void borraDatosPrueba() {
 		// Borra datos de prueba.
 		datos.getDatosUsuarios().clear();
+
 	}
 
 	@Test
@@ -84,14 +85,13 @@ public class DatosTest {
 				"López Pérez", new Direccion("30012", "Alta", "10", "Murcia", "España"), 
 				new Correo("pepe" + "@gmail.com"), new Fecha(1990, 11, 12), 
 				new Fecha(2014, 12, 3), new Contraseña("Miau#32"), RolUsuario.NORMAL);
-		
+		try {
 			// Usuario nuevo, que no existe.
-			try {
-				datos.altaUsuario(usr);
-			} 
-			catch (AccesoDatosException e) {
-				e.printStackTrace();
-			}
+			datos.altaUsuario(usr);
+		} 
+		catch (AccesoDatosException e) {
+			e.printStackTrace();
+		}
 		assertEquals(datos.buscarUsuario("PLP5L").getIdUsr(), "PLP5L");
 		assertEquals(datos.buscarUsuario("12345675L").getIdUsr(), "PLP5L");
 		assertEquals(datos.buscarUsuario("pepe@gmail.com").getIdUsr(), "PLP5L");
@@ -121,8 +121,8 @@ public class DatosTest {
 	}
 
 	@Test
-	public void testAltaUsuario() {	
-		// Usuario con idUsr "PLP5L"
+	public void testAltaUsuarioIntermedio() {	
+		// Usuario con idUsr "PLP5L" irá en posición intermedia.
 		Usuario usr =  new Usuario(new Nif("12345675L"), "Pepe",
 				"López Pérez", new Direccion("30012", "Alta", "10", "Murcia", "España"), 
 				new Correo("pepe" + "@gmail.com"), new Fecha(1990, 11, 12), 
@@ -136,23 +136,50 @@ public class DatosTest {
 		}
 		// Queda después de idUsr "PLP5K", posición 6 del arrayList
 		assertSame(usr, datos.getDatosUsuarios().get(6));
+	}
 
+	@Test
+	public void testAltaUsuarioPrincipio() {	
+		// Usuario con idUsr "PLP0J" irá en posición intermedia.
+		Usuario usr =  new Usuario(new Nif("12345670J"), "Pepe",
+				"López Pérez", new Direccion("30012", "Alta", "10", "Murcia", "España"), 
+				new Correo("pepe" + "@gmail.com"), new Fecha(1990, 11, 12), 
+				new Fecha(2014, 12, 3), new Contraseña("Miau#32"), RolUsuario.NORMAL);
 		try {
-			// Usuario que ya existe.
+			// Usuario nuevo, que no existe.
+			datos.altaUsuario(usr);
+		} 
+		catch (AccesoDatosException e) {
+			e.printStackTrace();
+		}
+		// Queda en la primera posición del ArrayList, antes de "PLP0K" 
+		assertSame(usr, datos.getDatosUsuarios().get(0));
+	}
+	
+	@Test
+	public void testAltaUsuarioRepetido() {	
+		// Usuario con idUsr "PLP5L"
+		Usuario usr =  new Usuario(new Nif("12345675L"), "Pepe",
+				"López Pérez", new Direccion("30012", "Alta", "10", "Murcia", "España"), 
+				new Correo("pepe" + "@gmail.com"), new Fecha(1990, 11, 12), 
+				new Fecha(2014, 12, 3), new Contraseña("Miau#32"), RolUsuario.NORMAL);		
+		try {
+			datos.altaUsuario(usr);
+			// Usuario ya existe.
 			datos.altaUsuario(usr);
 		} 
 		catch (AccesoDatosException e) {
 			assertSame(usr, datos.buscarUsuario(usr));
 		}
 	}
-
+	
 	@Test
 	public void testRegistrarSesion() {
 		// Usuario con idUsr "PLP5L"
 		Usuario usr =  new Usuario(new Nif("12345675L"), "Pepe",
 				"López Pérez", new Direccion("30012", "Alta", "10", "Murcia", "España"), 
 				new Correo("pepe" + "@gmail.com"), new Fecha(1990, 11, 12), 
-				new Fecha(2014, 12, 3), new Contraseña("Miau#32"), RolUsuario.NORMAL);	
+				new Fecha(2014, 12, 3), new Contraseña("Miau#32"), RolUsuario.NORMAL);
 		
 		SesionUsuario sesion = new SesionUsuario(usr, new Fecha());
 		datos.registrarSesion(sesion);

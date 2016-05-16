@@ -4,7 +4,15 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
-import modelo.*;
+import modelo.Contraseña;
+import modelo.Correo;
+import modelo.Direccion;
+import modelo.Mundo;
+import modelo.Nif;
+import modelo.Patron;
+import modelo.SesionUsuario;
+import modelo.Simulacion;
+import modelo.Usuario;
 import modelo.Usuario.RolUsuario;
 import util.Fecha;
 
@@ -113,9 +121,8 @@ public class Datos {
 			comparacion = datosUsuarios.get(medio).getIdUsr()
 					.compareToIgnoreCase(usr.getIdUsr());
 			if (comparacion == 0) {			
-				noExisteUsuario = false;		// Ya existe.
-				break;       				  
-			}	
+				throw new AccesoDatosException("El Usuario ya existe...");   				  
+			}		
 			if (comparacion < 0) {
 				inicio = medio + 1;
 			}			
@@ -123,13 +130,8 @@ public class Datos {
 				fin = medio - 1;
 			}
 		}	
-		if (noExisteUsuario) {
-			datosUsuarios.add(inicio, usr); 	// Inserta el usuario en orden.
-			registrarEquivalenciaId(usr);
-		}	
-		else {
-			throw new AccesoDatosException("El Usuario ya existe...");
-		}
+		datosUsuarios.add(inicio, usr); 	// Inserta el usuario en orden.
+		registrarEquivalenciaId(usr);		
 	}
 
 	/**
