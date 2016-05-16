@@ -1,7 +1,7 @@
 package accesoUsr;
 import java.util.Scanner;
 
-import accesoDato.Datos;
+import accesoDatos.Datos;
 import modelo.Contraseña;
 import modelo.SesionUsuario;
 import modelo.Usuario;

@@ -7,8 +7,8 @@
  * @author: ajp
  */
 
-import accesoDato.Datos;
-import accesoDato.test.DatosPrueba;
+import accesoDatos.Datos;
+import accesoDatos.test.DatosPrueba;
 import accesoUsr.Presentacion;
 
 public class JVPrincipal {	
