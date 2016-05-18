@@ -11,21 +11,12 @@ package accesoDatos.test;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
-
-import accesoDatos.AccesoDatosException;
-import accesoDatos.Datos;
-import modelo.Contraseña;
-import modelo.Correo;
-import modelo.Direccion;
-import modelo.Mundo;
-import modelo.Nif;
-import modelo.Patron;
-import modelo.Posicion;
-import modelo.SesionUsuario;
-import modelo.Simulacion;
-import modelo.Usuario;
+import java.util.Map;
+import modelo.*;
 import modelo.Usuario.RolUsuario;
 import util.Fecha;
+import accesoDatos.AccesoDatosException;
+import accesoDatos.Datos;
 
 public class DatosPrueba {
 
@@ -72,17 +63,27 @@ public class DatosPrueba {
 	/**
 	 * Genera datos de prueba válidos dentro 
 	 * de los almacenes de datos.
-	 * @param numero - el número de sesiones a generar.
 	 */
-	public static void cargarMundosPrueba(int numero) {
-		for (int i = 0; i < numero; i++) {
-			Mundo aux = new Mundo();
-			aux.setNombre("Mundo" + i);
-			aux.setDistribucion(new Hashtable<Patron,Posicion>()); 
-			aux.setEspacio(new byte[0][0]);
-			aux.setConstantes(new ArrayList<Integer>());
-			datos.altaMundo(aux);
-		}
+	public static void cargarMundoPrueba() {	
+		// En este array los 0 indican celdas con célula muerta y los 1 vivas
+		byte[][] espacioPrueba =  new byte[][]{ 
+			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+			{ 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+			{ 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0 }, //
+			{ 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 
+			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 
+			{ 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0 }, // 
+			{ 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0 }, //
+			{ 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0 }, // Given:
+			{ 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 1x Planeador
+			{ 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 1x Flip-Flop
+			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }  // 1x Still Life
+		};
+		Mundo mundoPrueba = new Mundo("Mundo de prueba", new ArrayList<Integer>(), 
+									new Hashtable<Patron,Posicion>(), espacioPrueba);
+		datos.altaMundo(mundoPrueba);
+
 	}
 
 	/**

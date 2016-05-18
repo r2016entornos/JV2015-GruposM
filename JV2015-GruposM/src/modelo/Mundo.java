@@ -1,5 +1,13 @@
 package modelo;
-
+/** 
+ * Proyecto: Juego de la vida.
+ *  Representa el espacio y las leyes que determinan el universo 
+ *  de simulación del según el modelo2.1
+ *  @since: prototipo2.1
+ *  @source: Mundo.java 
+ *  @version: 1.0 - 24/04/2016
+ *  @author: ajp
+ */
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -51,16 +59,16 @@ public class Mundo implements Leyes, Serializable {
 	 * Llama al constructor convencional utilizando objetos obtenidos
 	 * con los contructores copia de los atributos.
 	 * El atributo espacio es clonado utilizando utilidades de clonación de arrays.
-	 * @param m - ea Mundo a clonar
+	 * @param mundo - el Mundo a clonar
 	 */
-	public Mundo(Mundo m) {
-		this(m.nombre, new ArrayList<Integer>(m.constantes), 
-				new Hashtable<Patron,Posicion>(m.distribucion), m.espacio);
+	public Mundo(Mundo mundo) {
+		this(mundo.nombre, new ArrayList<Integer>(mundo.constantes), 
+				new Hashtable<Patron,Posicion>(mundo.distribucion), mundo.espacio);
 		
-		this.espacio = new byte[m.espacio.length][m.espacio.length];
+		this.espacio = new byte[mundo.espacio.length][mundo.espacio.length];
 		
-		for (int i=0; i <m.espacio.length; i++)
-			this.espacio[i] = Arrays.copyOf(m.espacio[i], m.espacio[i].length);
+		for (int i=0; i <mundo.espacio.length; i++)
+			this.espacio[i] = Arrays.copyOf(mundo.espacio[i], mundo.espacio[i].length);
 			//System.arraycopy(m.espacio[i], 0, this.espacio[i], 0, m.espacio[i].length);	
 	}
 	
@@ -160,7 +168,7 @@ public class Mundo implements Leyes, Serializable {
 	 * responde a la regla: El tiempo transcurre y se producen cambios...
 	 */
 	@Override
-	public void actualizarMundo()  {     					
+	public Object actualizarEstado()  {     					
 		int tam = espacio.length; 
 		byte[][] nuevaRealidad = new byte[tam][tam];
 
@@ -197,6 +205,7 @@ public class Mundo implements Leyes, Serializable {
 			}
 		}
 		espacio = nuevaRealidad;
+		return this;
 	}
 	
 } //class
