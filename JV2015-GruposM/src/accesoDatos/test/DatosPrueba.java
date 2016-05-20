@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 import modelo.*;
+import modelo.Simulacion.EstadoSimulacion;
 import modelo.Usuario.RolUsuario;
 import util.Fecha;
 import accesoDatos.AccesoDatosException;
@@ -61,6 +62,17 @@ public class DatosPrueba {
 	}
 
 	/**
+	 * Genera un objeto de prueba válido dentro del almacenes de datos.
+	 */
+	public static void cargarSimulacionPrueba() {
+		cargarUsuariosPrueba(1);
+		cargarMundoPrueba();
+		Simulacion simulacionPrueba = new Simulacion(datos.buscarUsuario("PLP0K"), 
+				new Fecha(), datos.buscarMundo("Prueba0"),	EstadoSimulacion.PREPARADA);
+		datos.altaSimulacion(simulacionPrueba);
+	}
+	
+	/**
 	 * Genera datos de prueba válidos dentro 
 	 * de los almacenes de datos.
 	 */
@@ -80,10 +92,14 @@ public class DatosPrueba {
 			{ 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 1x Flip-Flop
 			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }  // 1x Still Life
 		};
-		Mundo mundoPrueba = new Mundo("Mundo de prueba", new ArrayList<Integer>(), 
+		Mundo mundoPrueba = new Mundo("Prueba0", new ArrayList<Integer>(), 
 									new Hashtable<Patron,Posicion>(), espacioPrueba);
-		datos.altaMundo(mundoPrueba);
-
+		try {
+			datos.altaMundo(mundoPrueba);
+		} 
+		catch (AccesoDatosException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -97,23 +113,6 @@ public class DatosPrueba {
 			patron.setNombre("Patron" + i);
 			patron.setEsquema(new byte[0][0]);
 			datos.altaPatron(patron);
-		}
-	}
-
-	/**
-	 * Genera datos de prueba válidos dentro 
-	 * de los almacenes de datos.
-	 * @param numero - el número de simulaciones a generar.
-	 */
-	public static void cargarSimulacionesPrueba(int numero) {
-		for (int i = 0; i < numero; i++) {
-			Usuario usr = datos.buscarUsuario("PLP56" + (char) ('A' + i));
-			if (usr != null) {
-				Simulacion aux = new Simulacion();
-				aux.setUsr(usr);
-				aux.setFecha(new Fecha(2015, 1, 13)); 
-				datos.altaSimulacion(aux);
-			}
 		}
 	}
 

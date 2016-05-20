@@ -12,13 +12,8 @@ import accesoDatos.test.DatosPrueba;
 import accesoUsr.control.ControlSesion;
 
 public class JVPrincipal {	
-	public static void main(String[] args) {				
-		final int  MAX_USUARIOS_PRUEBA = 10;
-		Datos datos = Datos.getInstancia();
-		DatosPrueba.cargarUsuariosPrueba(MAX_USUARIOS_PRUEBA);
-		DatosPrueba.cargarMundoPrueba();
-		
-		System.out.println(datos.textoDatosUsuarios());
+	public static void main(String[] args) {					
+		DatosPrueba.cargarSimulacionPrueba();
 			
 		if (args.length == 0) { 
 			new ControlSesion();

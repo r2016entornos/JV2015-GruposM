@@ -6,7 +6,6 @@ import accesoUsr.control.ControlSimulacion;
 
 public class VistaSimulacionTexto {
 	// Atributos
-	final int TAMAÑO = 12;
 	final int CICLOS = 120;
 	private Scanner teclado;
 	
@@ -19,9 +18,10 @@ public class VistaSimulacionTexto {
 	 * a una generación del Juego de la vida.
 	 */
 	public void mostrarMundo(ControlSimulacion control) {
-		for (int i = 0; i < TAMAÑO; i++) {
-			for (int j = 0; j < TAMAÑO; j++) {
-				System.out.print((control.getMundo().getEspacio()[i][j] == 1) ? "|o" : "| ");
+		byte[][] espacio = control.getMundo().getEspacio();
+		for (int i = 0; i < espacio.length; i++) {
+			for (int j = 0; j < espacio.length; j++) {
+				System.out.print((espacio[i][j] == 1) ? "|o" : "| ");
 			}
 			System.out.println("|");
 		}
