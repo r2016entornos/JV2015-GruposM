@@ -1,5 +1,12 @@
 package accesoUsr.vista;
-
+/** 
+ * Proyecto: Juego de la vida.
+ * Clase Vista (MCV) para la presentación de la sesión de usuario.
+ *  @since: prototipo2.1
+ *  @source: VistaSesionTexto.java 
+ * @version: 1.0 - 2015/05/18 
+ *  @author: ajp
+ */
 import java.util.Scanner;
 
 public class VistaSesionTexto {

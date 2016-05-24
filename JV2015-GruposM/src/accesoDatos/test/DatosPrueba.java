@@ -16,7 +16,7 @@ import modelo.*;
 import modelo.Simulacion.EstadoSimulacion;
 import modelo.Usuario.RolUsuario;
 import util.Fecha;
-import accesoDatos.AccesoDatosException;
+import accesoDatos.DatosException;
 import accesoDatos.Datos;
 
 public class DatosPrueba {
@@ -38,7 +38,7 @@ public class DatosPrueba {
 					new Fecha(2014, 12, 3), new Contraseña("Miau#" + i), RolUsuario.NORMAL);				
 			try {
 				datos.altaUsuario(usr);
-			} catch (AccesoDatosException e) {
+			} catch (DatosException e) {
 				e.printStackTrace();
 			}
 		}
@@ -97,7 +97,7 @@ public class DatosPrueba {
 		try {
 			datos.altaMundo(mundoPrueba);
 		} 
-		catch (AccesoDatosException e) {
+		catch (DatosException e) {
 			e.printStackTrace();
 		}
 	}

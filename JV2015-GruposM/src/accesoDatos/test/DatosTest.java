@@ -6,7 +6,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import accesoDatos.AccesoDatosException;
+import accesoDatos.DatosException;
 import accesoDatos.Datos;
 import modelo.Contraseña;
 import modelo.Correo;
@@ -86,7 +86,7 @@ public class DatosTest {
 			// Usuario nuevo, que no existe.
 			datos.altaUsuario(usr);
 		} 
-		catch (AccesoDatosException e) {
+		catch (DatosException e) {
 			e.printStackTrace();
 		}
 		assertEquals(datos.buscarUsuario("PLP5L").getIdUsr(), "PLP5L");
@@ -105,7 +105,7 @@ public class DatosTest {
 			// Usuario nuevo, que no existe.
 			datos.altaUsuario(usr);
 		} 
-		catch (AccesoDatosException e) {
+		catch (DatosException e) {
 			e.printStackTrace();
 		}
 		// Busca el mismo Usuario almacenado.
@@ -128,7 +128,7 @@ public class DatosTest {
 			// Usuario nuevo, que no existe.
 			datos.altaUsuario(usr);
 		} 
-		catch (AccesoDatosException e) {
+		catch (DatosException e) {
 			e.printStackTrace();
 		}
 		// Queda después de idUsr "PLP5K", posición 6 del arrayList
@@ -146,7 +146,7 @@ public class DatosTest {
 			// Usuario nuevo, que no existe.
 			datos.altaUsuario(usr);
 		} 
-		catch (AccesoDatosException e) {
+		catch (DatosException e) {
 			e.printStackTrace();
 		}
 		// Queda en la primera posición del ArrayList, antes de "PLP0K" 
@@ -165,7 +165,7 @@ public class DatosTest {
 			// Usuario ya existe.
 			datos.altaUsuario(usr);
 		} 
-		catch (AccesoDatosException e) {
+		catch (DatosException e) {
 			assertSame(usr, datos.buscarUsuario(usr));
 		}
 	}

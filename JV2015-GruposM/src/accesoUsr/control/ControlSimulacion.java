@@ -1,5 +1,13 @@
 package accesoUsr.control;
 
+/** 
+ * Proyecto: Juego de la vida.
+ * Clase de control (MVC) para la interacción en la simulación.
+ *  @since: prototipo2.1
+ *  @source: ControlSimulacion.java 
+ * @version: 1.0 - 2016/05/18 
+ *  @author: ajp
+ */
 import accesoDatos.Datos;
 import accesoUsr.vista.VistaSimulacionTexto;
 import modelo.Mundo;
