@@ -1,10 +1,9 @@
 /** 
  * Proyecto: Juego de la vida.
- *  jv2014.ajp
  * Maneja los errores de acceso a datos.
- *  @since: prototipo2
- *  @source: AccesoDatosException.java 
- * @version: 2.2 - 18/05/2015 
+ *  @since: prototipo2.1
+ *  @source: DatosException.java 
+ * @version: 1.0 - 2016/05/25
  *  @author: ajp
  */
 

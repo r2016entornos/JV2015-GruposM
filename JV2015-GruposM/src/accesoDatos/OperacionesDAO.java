@@ -8,7 +8,6 @@ package accesoDatos;
  * @version: 1.0 - 2015/05/23 
  *  @author: ajp
  */
-
 public interface OperacionesDAO {
 
 	/**

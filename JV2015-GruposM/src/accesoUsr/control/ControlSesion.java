@@ -1,14 +1,7 @@
 package accesoUsr.control;
 
-/** 
- * Proyecto: Juego de la vida.
- * Clase de control (MVC) para la interacción en la sesion de usuario.
- *  @since: prototipo2.1
- *  @source: ControlSesion.java 
- * @version: 1.0 - 2016/05/18 
- *  @author: ajp
- */
-import accesoDatos.Datos;
+import accesoDatos.DatosException;
+import accesoDatos.GestionDatos;
 import accesoUsr.vista.VistaSesionTexto;
 import modelo.Contraseña;
 import modelo.SesionUsuario;
@@ -19,7 +12,7 @@ public class ControlSesion {
 	private VistaSesionTexto vista;
 	private Usuario usrSesion;
 	private SesionUsuario sesion;
-	private Datos datos;
+	private GestionDatos datos;
 
 	public ControlSesion() {
 		this(null);
@@ -30,10 +23,10 @@ public class ControlSesion {
 	}
 
 	private void initControlSesion(String idUsr) {
-		datos = Datos.getInstancia();
+		datos = GestionDatos.getInstancia();
 		vista = new VistaSesionTexto();
 		iniciarSesionUsuario(idUsr); 
-		new ControlSimulacion();
+		new ControlSimulacion(sesion);
 	}
 
 	/**
@@ -61,7 +54,7 @@ public class ControlSesion {
 
 			// Busca usuario coincidente con credencial
 			vista.mostrar(credencialUsr);
-			usrSesion = datos.buscarUsuario(credencialUsr);
+			usrSesion = datos.obtenerUsuario(credencialUsr);
 			if ( usrSesion != null) {			
 				if (usrSesion.getClaveAcceso().equals(new Contraseña(clave))) {
 					todoCorrecto = true;
@@ -79,10 +72,17 @@ public class ControlSesion {
 			// Registra sesión
 			//Crea la sesión de usuario en el sistema
 			sesion = new SesionUsuario(usrSesion, new Fecha());
-			datos.registrarSesion(sesion);
-			vista.mostrar("Sesión: " + datos.getSesionesRegistradas()
-			+ '\n' + "Iniciada por: " + usrSesion.getNombre() + " "
-			+ usrSesion.getApellidos());
+			try {
+				datos.altaSesion(sesion);
+			} catch (DatosException e) {
+				e.printStackTrace();
+			}
+			// Falta implementar la gestion de id de sesion en la 
+			// clase SesionUsuario.
+			
+			//vista.mostrar("Sesión: " + datos.obtenerSesion(id)
+			//+ '\n' + "Iniciada por: " + usrSesion.getNombre() + " "
+			//+ usrSesion.getApellidos());
 		}
 		else {	
 			vista.mostrar("Fin de programa...");

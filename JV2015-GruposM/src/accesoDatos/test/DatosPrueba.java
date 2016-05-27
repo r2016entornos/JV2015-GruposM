@@ -11,18 +11,27 @@ package accesoDatos.test;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Map;
-import modelo.*;
+
+import accesoDatos.DatosException;
+import accesoDatos.GestionDatos;
+import modelo.Contraseña;
+import modelo.Correo;
+import modelo.Direccion;
+import modelo.Mundo;
+import modelo.Nif;
+import modelo.Patron;
+import modelo.Posicion;
+import modelo.SesionUsuario;
+import modelo.Simulacion;
 import modelo.Simulacion.EstadoSimulacion;
+import modelo.Usuario;
 import modelo.Usuario.RolUsuario;
 import util.Fecha;
-import accesoDatos.DatosException;
-import accesoDatos.Datos;
 
 public class DatosPrueba {
 
-	// Almacen de datos
-	private static Datos datos = Datos.getInstancia();
+	// Fachada de datos
+	private static GestionDatos datos = GestionDatos.getInstancia();
 
 	/**
 	 * Genera datos de prueba válidos dentro 
@@ -51,12 +60,16 @@ public class DatosPrueba {
 	 */
 	public static void cargarSesionesPrueba(int numero) {
 		for (int i = 0; i < numero; i++) {
-			Usuario usr = datos.buscarUsuario("PLP56" + (char) ('A' + i));
+			Usuario usr = datos.obtenerUsuario("PLP56" + (char) ('A' + i));
 			if (usr != null) {
 				SesionUsuario aux = new SesionUsuario();
 				aux.setUsr(usr);
 				aux.setFecha(new Fecha(2015, 1, 13)); 
-				datos.registrarSesion(aux);
+				try {
+					datos.altaSesion(aux);
+				} catch (DatosException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -67,9 +80,13 @@ public class DatosPrueba {
 	public static void cargarSimulacionPrueba() {
 		cargarUsuariosPrueba(1);
 		cargarMundoPrueba();
-		Simulacion simulacionPrueba = new Simulacion(datos.buscarUsuario("PLP0K"), 
-				new Fecha(), datos.buscarMundo("Prueba0"),	EstadoSimulacion.PREPARADA);
-		datos.altaSimulacion(simulacionPrueba);
+		Simulacion simulacionPrueba = new Simulacion(datos.obtenerUsuario("PLP0K"), 
+				new Fecha(), datos.obtenerMundo("Prueba0"),	EstadoSimulacion.PREPARADA);
+		try {
+			datos.altaSimulacion(simulacionPrueba);
+		} catch (DatosException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -112,8 +129,17 @@ public class DatosPrueba {
 			Patron patron = new Patron();
 			patron.setNombre("Patron" + i);
 			patron.setEsquema(new byte[0][0]);
-			datos.altaPatron(patron);
+			try {
+				datos.altaPatron(patron);
+			} catch (DatosException e) {
+				e.printStackTrace();
+			}
 		}
+	}
+
+	public static void borrarDatosPrueba() {
+		//
+		
 	}
 
 } //class
