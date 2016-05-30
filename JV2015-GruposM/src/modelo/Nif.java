@@ -1,9 +1,10 @@
 package modelo;
 
+import java.io.Serializable;
 
 import util.Formato;
 
-public class Nif { 
+public class Nif implements Serializable { 
 	
 	// Atributo
 	private String texto;

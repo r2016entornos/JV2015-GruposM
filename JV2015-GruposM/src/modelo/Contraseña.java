@@ -1,9 +1,10 @@
 package modelo;
 
+import java.io.Serializable;
 
 import util.Formato;
 
-public class Contraseña {
+public class Contraseña implements Serializable {
 
 	private String texto;
 	
@@ -20,7 +21,7 @@ public class Contraseña {
 	}
 
 	public void setTexto(String texto) {
-		assert textoValido(texto);
+		assert esValida(texto);
 		this.texto = encriptar(texto);
 	}
 	
@@ -29,7 +30,7 @@ public class Contraseña {
 	 * @param texto.
 	 * @return true si cumple.
 	 */
-	private boolean textoValido(String texto) {
+	public static boolean esValida(String texto) {
 		if (texto != null 
 				&& util.Formato.validar(texto, Formato.PATRON_CONTRASEÑA3)) {
 			return true;

@@ -12,22 +12,16 @@ public class ControlSimulacion {
 	VistaSimulacionTexto vista;
 	Simulacion simulacion;
 	Mundo mundo;
-	SesionUsuario sesion; 
 	
-	public ControlSimulacion(SesionUsuario sesion) {
-		this.sesion = sesion;
+	public ControlSimulacion(Simulacion simulacion) {
+		this.simulacion = simulacion;
 		initControlSimulacion();
 	}
 	
 	private void initControlSimulacion() {	
-		simulacion = datos.obtenerSimulacion(obtenerId());
 		mundo = simulacion.getMundo();	
 		vista = new VistaSimulacionTexto();
 		arrancarSimulacion();	
-	}
-
-	private String obtenerId() {
-		return sesion.getUsr().getIdUsr() + mundo.getNombre();
 	}
 
 	/**

@@ -1,5 +1,6 @@
 package modelo;
 
+import java.io.Serializable;
 
 import util.Fecha;
 
@@ -12,7 +13,7 @@ import util.Fecha;
  *  @author: ajp
  */
 
-public class Usuario  extends Persona {
+public class Usuario extends Persona implements Serializable {
 
 	public enum RolUsuario {
 		INVITADO, 

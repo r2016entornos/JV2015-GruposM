@@ -1,5 +1,6 @@
 package modelo;
 
+import java.io.Serializable;
 
 import util.Fecha;
 
@@ -14,7 +15,7 @@ import util.Fecha;
  *  @author: ajp
  */
 
-public class SesionUsuario {
+public class SesionUsuario implements Serializable {
 	
 	// Atributos	
 	private Usuario usr;   // Concreta la relación de composición del modelo UML
@@ -50,6 +51,16 @@ public class SesionUsuario {
 		return fecha;
 	}
 
+	/**
+	 * Obtiene idSesion concatenando idUsr + un número como texto con el formato:
+	 * año+mes+dia+hora+minuto+segundo de la fecha de sesión.
+	 * @return idSesion único generado.
+	 */
+	public String getIdSesion() {
+		return usr.getIdUsr() + fecha.getAño() + fecha.getMes() + fecha.getDia() 
+		+ fecha.getHora() + fecha.getMinuto() + fecha.getSegundo();
+	}
+	
 	public void setUsr(Usuario usr) {
 		assert usr != null;
 		this.usr = usr;

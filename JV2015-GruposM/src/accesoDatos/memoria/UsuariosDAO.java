@@ -1,14 +1,5 @@
 package accesoDatos.memoria;
-/** 
- * Proyecto: Juego de la vida.
- *  Resuelve todos los aspectos del almacenamiento del
- *  DTO Usuario utilizando un ArrayList no persistentes; sólo en memoria.
- *  Colabora en el patron Fachada.
- *  @since: prototipo2.2
- *  @source: MundosDAO.java 
- *  @version: 1.0 - 2016/05/23 
- *  @author: ajp
- */
+
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
@@ -29,7 +20,7 @@ public class UsuariosDAO  implements OperacionesDAO {
 	/**
 	 * Constructor por defecto de uso interno.
 	 * Sólo se ejecutará una vez.
-	 * @throws AccesoDatosException 
+	 * @throws DatosException 
 	 */
 	private UsuariosDAO() {
 		datosUsuarios = new ArrayList<Usuario>();
@@ -42,7 +33,7 @@ public class UsuariosDAO  implements OperacionesDAO {
 	 *  Utiliza inicialización diferida.
 	 *  Sólo se crea una vez; instancia única -patrón singleton-
 	 *  @return instancia
-	 * @throws AccesoDatosException 
+	 * @throws DatosException 
 	 */
 	public static UsuariosDAO getInstancia() {
 		if (instancia == null) {
@@ -50,38 +41,48 @@ public class UsuariosDAO  implements OperacionesDAO {
 		}
 		return instancia;
 	}
-	
+
 	//OPERACIONES DAO
 	/**
 	 * Obtiene por búsqueda binaria un Usuario dado su id.
-	 * @param id - el idUsr de Usuario a buscar.
+	 * @param idUsr - el idUsr de Usuario a buscar.
 	 * @return - el Usuario encontrado; null si no existe.
 	 */	
 	@Override
-	public Object obtener(String id) {
-
+	public Usuario obtener(String idUsr) {
 		int comparacion;
 		int inicio = 0;
 		int fin = datosUsuarios.size() - 1;
 		int medio;
 		while (inicio <= fin) {
 			medio = (inicio + fin) / 2;
-			comparacion = datosUsuarios.get(medio).getIdUsr().compareToIgnoreCase(id);
-
-			if (comparacion == 0)
+			comparacion = datosUsuarios.get(medio).getIdUsr().compareToIgnoreCase(idUsr);
+			if (comparacion == 0) {
 				return datosUsuarios.get(medio);
-
-			if (comparacion < 0) 
+			}
+			if (comparacion < 0){
 				inicio = medio + 1;
-			else
+			}
+			else {
 				fin = medio - 1;
+			}
 		}
 		return null;
 	}
 
 	/**
-	 * @param id - la clave alternativa 
-	 * @return - El idUsr equivalente
+	 * Búsqueda de Usuario dado un objeto, reenvía al método que utiliza idUsr.
+	 * @param obj - el Usuario a buscar.
+	 * @return - el Usuario encontrado; null si no existe.
+	 */
+	@Override
+	public Usuario obtener(Object obj)  {
+		return this.obtener(((Usuario) obj).getIdUsr());
+	}	
+	
+	/**
+	 * @param id - la clave alternativa. 
+	 * @return - El idUsr equivalente.
 	 */
 	public String obtenerEquivalencia(String id) {
 		return equivalenciasId.get(id);
@@ -101,7 +102,6 @@ public class UsuariosDAO  implements OperacionesDAO {
 		int inicio = 0;
 		int fin = datosUsuarios.size() - 1;
 		int medio = 0;
-		boolean noExisteUsuario = true;
 		while (inicio <= fin) {
 			medio = (inicio + fin) / 2;			// Calcula posición central.
 			// compara los dos id. Obtiene < 0 si id va después que medio.
@@ -134,20 +134,20 @@ public class UsuariosDAO  implements OperacionesDAO {
 
 	/**
 	 * Elimina el objeto, dado el id utilizado para el almacenamiento.
-	 * @param id - el identificador del objeto a eliminar.
+	 * @param idUsr - el identificador del objeto a eliminar.
 	 * @return - el Objeto eliminado.
-	 * @throws AccesoDatosException - si no existe.
+	 * @throws DatosException - si no existe.
 	 */
 	@Override
-	public Object baja(String id) throws DatosException {
-		int comparacion;
+	public Object baja(String idUsr) throws DatosException {
 		int inicio = 0;
 		int fin = datosUsuarios.size() - 1;
 		int medio;
 		Usuario aux;
+		int comparacion;					// auxiliar para la comparación de String
 		while (inicio <= fin) {
 			medio = (inicio + fin) / 2;
-			comparacion = datosUsuarios.get(medio).getIdUsr().compareToIgnoreCase(id);
+			comparacion = datosUsuarios.get(medio).getIdUsr().compareToIgnoreCase(idUsr);
 			if (comparacion == 0) {
 				// Elimina
 				aux = datosUsuarios.get(medio);
@@ -155,10 +155,12 @@ public class UsuariosDAO  implements OperacionesDAO {
 				equivalenciasId.remove(aux.getIdUsr(), aux.getIdUsr());
 				return aux;
 			}
-			if (comparacion < 0) 
+			if (comparacion < 0) { 
 				inicio = medio + 1;
-			else
-				fin = medio - 1;
+			}
+			else {
+				fin = medio - 1; 
+			}
 		}
 		throw new DatosException("El Usuario no existe...");
 	} 
@@ -167,45 +169,51 @@ public class UsuariosDAO  implements OperacionesDAO {
 	 *  Actualiza datos de un Usuario reemplazando el almacenado por el recibido. 
 	 *  Localiza la posición del almacenado por búsqueda binaria.
 	 *	@param obj - Usuario con los cambios.
-	 *  @throws AccesoDatosException - si no existe.
+	 *  @throws DatosException - si no existe.
 	 */
 	@Override
 	public void actualizar(Object obj) throws DatosException {
-		int comparacion;					// auxiliar para la comparación de String
-		boolean existeUsuario = false;
-		Usuario aux;
-		Usuario u = (Usuario) obj;			// para conversión cast
+		assert obj != null;
+		Usuario usr = (Usuario) obj;			// para conversión cast
 		int inicio = 0;
 		int fin = datosUsuarios.size()-1;
 		int medio = 0;
+		int comparacion;					// auxiliar para la comparación de String
+		boolean noExisteUsuario = true;
 		while (inicio <= fin) {
 			medio = (inicio + fin) / 2;     // calcula posición central
 			// compara los dos id. Obtiene < 0 si id va después que medio
-			comparacion = datosUsuarios.get(medio).getIdUsr().compareTo(u.getIdUsr());
-
+			comparacion = datosUsuarios.get(medio).getIdUsr().compareTo(usr.getIdUsr());
 			if (comparacion == 0) {			// id coincide con el comparado
-				existeUsuario = true;
+				reemplazar(usr, medio);
+				noExisteUsuario = false;
 				break;       				// ya actualizado  
 			}
-			if (comparacion < 0) 			// id va después alfabéticamente 
+			if (comparacion < 0) { 			// id va después alfabéticamente 
 				inicio = medio + 1;
-			else				 			// id va antes alfabéticamente
+			}
+			else {				 			// id va antes alfabéticamente
 				fin = medio - 1;
+			}
 		}
-		if (existeUsuario) {
-			// actualiza el usuario
-			aux = datosUsuarios.get(medio);
-			datosUsuarios.remove(medio); 
-			datosUsuarios.add(medio, u); 	
-			//actualiza equivalencias de id de acceso
-			equivalenciasId.remove(aux.getIdUsr(), aux.getIdUsr());
-			equivalenciasId.put(u.getIdUsr(), u.getIdUsr());
-			equivalenciasId.put(u.getNif().getTexto(), u.getIdUsr());
-			equivalenciasId.put(u.getCorreo().getTexto(), u.getIdUsr());
-		}		
-		else 
+		if (noExisteUsuario) {
 			throw new DatosException("No existe el Usuario...");
+		}
 	} 
+
+	/**
+	 *  Reemplaza un Usuario almacenado por el recibido. 
+	 *	@param usr - Usuario con los cambios.
+	 *  @param posicion - indice del elemento a reemplazar.
+	 */
+	private void reemplazar(Usuario usr, int posicion) {
+		// Reemplaza elemento
+		datosUsuarios.set(posicion, usr);  	
+		// Reemplaza equivalencias de id de acceso
+		equivalenciasId.replace(usr.getIdUsr(), usr.getIdUsr());
+		equivalenciasId.replace(usr.getNif().getTexto(), usr.getIdUsr());
+		equivalenciasId.replace(usr.getCorreo().getTexto(), usr.getIdUsr());	
+	}
 
 	/**
 	 * Obtiene el listado de todos los usuarios almacenados.
@@ -214,9 +222,11 @@ public class UsuariosDAO  implements OperacionesDAO {
 	@Override
 	public String listarDatos() {
 		StringBuilder sb = new StringBuilder();
-		for (Usuario u: datosUsuarios)
-			if (u != null)
-				sb.append("\n" + u);
+		for (Usuario u: datosUsuarios) {
+			if (u != null) {
+				sb.append("\n" + u); 
+			}
+		}
 		return sb.toString();
 	}
 
@@ -227,9 +237,9 @@ public class UsuariosDAO  implements OperacionesDAO {
 	public String datosUsuariosTexto() {
 		StringBuilder aux = new StringBuilder();
 		for (Usuario u: datosUsuarios) {
-
-			if (u != null) 
+			if (u != null) {
 				aux.append(u.toString() + ';');
+			}
 		}
 		return aux.toString();
 	}

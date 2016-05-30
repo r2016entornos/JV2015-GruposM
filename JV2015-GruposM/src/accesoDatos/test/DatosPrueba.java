@@ -1,3 +1,6 @@
+
+package accesoDatos.test;
+
 /** 
  * Proyecto: Juego de la vida.
  *  Clase auxiliar para generar datos de prueba.
@@ -7,24 +10,13 @@
  *  @author: ajp
  */
 
-package accesoDatos.test;
-
 import java.util.ArrayList;
 import java.util.Hashtable;
 
 import accesoDatos.DatosException;
 import accesoDatos.GestionDatos;
-import modelo.Contraseña;
-import modelo.Correo;
-import modelo.Direccion;
-import modelo.Mundo;
-import modelo.Nif;
-import modelo.Patron;
-import modelo.Posicion;
-import modelo.SesionUsuario;
-import modelo.Simulacion;
+import modelo.*;
 import modelo.Simulacion.EstadoSimulacion;
-import modelo.Usuario;
 import modelo.Usuario.RolUsuario;
 import util.Fecha;
 
@@ -32,7 +24,7 @@ public class DatosPrueba {
 
 	// Fachada de datos
 	private static GestionDatos datos = GestionDatos.getInstancia();
-
+	
 	/**
 	 * Genera datos de prueba válidos dentro 
 	 * del almacén de datos.
@@ -141,5 +133,6 @@ public class DatosPrueba {
 		//
 		
 	}
+
 
 } //class

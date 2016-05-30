@@ -1,19 +1,22 @@
 package util;
 
 import java.util.Date;
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class Fecha {
+public class Fecha implements Serializable {
 
 	private Calendar calendario;
 
 	public Fecha(int año, int mes, int dia) {
 		calendario = new GregorianCalendar(año, mes-1, dia);
+		//calendario.setLenient(false);
 	}
 
 	public Fecha() {
 		calendario = new GregorianCalendar(); 
+		//calendario.setLenient(false);
 	}
 
 	public Fecha(Fecha fecha) {
@@ -25,13 +28,25 @@ public class Fecha {
 	}
 
 	public int getMes() {
-		return calendario.get(Calendar.MONTH) + 1 ;
+		return calendario.get(Calendar.MONTH) + 1;
 	}
 	
 	public int getDia() {
 		return calendario.get(Calendar.DAY_OF_MONTH);
 	}
 
+	public int getHora() {
+		return calendario.get(Calendar.HOUR_OF_DAY);
+	}
+	
+	public int getMinuto() {
+		return calendario.get(Calendar.MINUTE);
+	}
+	
+	public int getSegundo() {
+		return calendario.get(Calendar.SECOND);
+	}
+	
 	public void setAño(int año) {
 		calendario.set(Calendar.YEAR, año);
 	}
@@ -194,5 +209,6 @@ public class Fecha {
 	public Object clone() {
 		return new Fecha(this);
 	}
+
 	
 } // class

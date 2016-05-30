@@ -1,9 +1,10 @@
 package modelo;
 
+import java.io.Serializable;
 
 import util.Formato;
 
-public class Direccion {
+public class Direccion implements Serializable {
 	private String codigoPostal;
 	private String via;
 	private String numero;
@@ -29,7 +30,7 @@ public class Direccion {
 	}
 	
 	public void setCodigoPostal(String codigoPostal) {
-		assert codigoPostalValido(codigoPostal);
+		assert esValidoCodigoPostal(codigoPostal);
 		this.codigoPostal = codigoPostal;
 	}
 
@@ -38,7 +39,7 @@ public class Direccion {
 	 * @param codigoPostal.
 	 * @return true si cumple.
 	 */
-	private boolean codigoPostalValido(String codigoPostal) {
+	public static boolean esValidoCodigoPostal(String codigoPostal) {
 		if (codigoPostal != null
 				&& util.Formato.validar(codigoPostal, Formato.PATRON_CP) 
 				&& codigoPostalAutentico(codigoPostal)) {
@@ -52,14 +53,14 @@ public class Direccion {
 	 * @param codigoPostal.
 	 * @return true si cumple.
 	 */
-	private boolean codigoPostalAutentico(String codigoPostal) {
+	private static boolean codigoPostalAutentico(String codigoPostal) {
 		// Comprueba que el codigo postal no es falso. 
 		//--Pendiente--
 		return true;
 	}
 
 	public void setVia(String via) {
-		assert viaValida(via);
+		assert esValidaVia(via);
 		this.via = via;	
 	}
 
@@ -68,7 +69,7 @@ public class Direccion {
 	 * @param via.
 	 * @return true si cumple.
 	 */
-	private boolean viaValida(String via) {
+	public static boolean esValidaVia(String via) {
 		if (via != null
 				&& util.Formato.validar(via, Formato.PATRON_TOPONIMO)
 				&& viaAutentica(via)) {
@@ -82,14 +83,14 @@ public class Direccion {
 	 * @param via.
 	 * @return true si cumple.
 	 */
-	private boolean viaAutentica(String via) {
+	private static boolean viaAutentica(String via) {
 		// Comprueba que la via no es falsa.
 		//--Pendiente--
 		return true;
 	}
 	
 	public void setNumero(String numero) {
-		assert numeroValido(numero);
+		assert esValidoNumero(numero);
 		this.numero = numero;
 	}
 	
@@ -98,7 +99,7 @@ public class Direccion {
 	 * @param via.
 	 * @return true si cumple.
 	 */
-	private boolean numeroValido(String numero) {
+	public static boolean esValidoNumero(String numero) {
 		if (numero != null
 				&& util.Formato.validar(numero, Formato.PATRON_NUMERO_POSTAL)) {
 			return true;
@@ -107,7 +108,7 @@ public class Direccion {
 	}
 	
 	public void setPoblacion(String poblacion) {
-		assert poblacionValida(poblacion);
+		assert esValidapoblacion(poblacion);
 		this.poblacion = poblacion;
 	}
 
@@ -116,7 +117,7 @@ public class Direccion {
 	 * @param poblacion.
 	 * @return true si cumple.
 	 */
-	private boolean poblacionValida(String poblacion) {
+	public static boolean esValidapoblacion(String poblacion) {
 		if (poblacion != null
 				&& util.Formato.validar(poblacion, Formato.PATRON_TOPONIMO)
 				&& poblacionAutentica(poblacion)) {
@@ -130,14 +131,14 @@ public class Direccion {
 	 * @param poblacion.
 	 * @return true si cumple.
 	 */
-	private boolean poblacionAutentica(String poblacion) {
+	private static boolean poblacionAutentica(String poblacion) {
 		// Comprueba que la población no es falsa.
 		//--Pendiente--
 		return true;
 	}
 	
 	public void setPais(String pais) {
-		assert paisValido(pais);
+		assert esValidoPais(pais);
 		this.pais = pais;
 	}
 
@@ -146,7 +147,7 @@ public class Direccion {
 	 * @param pais.
 	 * @return true si cumple.
 	 */
-	private boolean paisValido(String pais) {
+	public static boolean esValidoPais(String pais) {
 		if (pais != null
 				&& util.Formato.validar(pais, Formato.PATRON_TOPONIMO)
 				&& paisAutentico(pais)) {
@@ -160,8 +161,8 @@ public class Direccion {
 	 * @param pais.
 	 * @return true si cumple.
 	 */
-	private boolean paisAutentico(String pais) {
-		// Comprueba que el pais no es falso.
+	private static boolean paisAutentico(String pais) {
+		// Comprueba que el pais existe.
 		//--Pendiente--
 		return true;
 	}

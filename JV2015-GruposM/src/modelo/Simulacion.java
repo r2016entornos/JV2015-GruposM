@@ -1,5 +1,13 @@
 package modelo;
-
+/** 
+ * Proyecto: Juego de la vida.
+ *  Organiza aspectos de gestión de la simulación 
+ *  según el modelo2.1
+ *  @since: prototipo2.1
+ *  @source: Simulacion.java 
+ *  @version: 1.0 - 24/04/2016
+ *  @author: ajp
+ */
 
 import java.io.Serializable;
 import java.util.Hashtable;
@@ -58,58 +66,44 @@ public class Simulacion implements Serializable {
 		this(s.usr, new Fecha(s.fecha), new Mundo(s.mundo), s.estado);
 	}
 	
-	/**
-	 * @return the usr
-	 */
 	public Usuario getUsr() {
 		return usr;
 	}
 
-	/**
-	 * @return the mundo
-	 */
 	public Mundo getMundo() {
 		return mundo;
 	}
 
-	/**
-	 * @return the fecha
-	 */
 	public Fecha getFecha() {
 		return fecha;
 	}
 
-	/**
-	 * @return the estado
-	 */
 	public EstadoSimulacion getEstado() {
 		return estado;
 	}
 
 	/**
-	 * @param usr the usr to set
+	 * Obtiene idSesion concatenando idUsr + un número como texto con el formato:
+	 * año+mes+dia+hora+minuto de la fecha de sesión.
+	 * @return true si cumple.
 	 */
+	public String getIdSimulacion() {
+		return usr.getIdUsr() + fecha.getAño() + fecha.getMes() + fecha.getDia() 
+		+ fecha.getHora() + fecha.getMinuto();
+	}
+	
 	public void setUsr(Usuario usr) {
 		this.usr = usr;
 	}
 
-	/**
-	 * @param mundo the mundo to set
-	 */
 	public void setMundo(Mundo mundo) {
 		this.mundo = mundo;
 	}
 
-	/**
-	 * @param fecha the fecha to set
-	 */
 	public void setFecha(Fecha fecha) {
 		this.fecha = fecha;
 	}
 
-	/**
-	 * @param estado the estado to set
-	 */
 	public void setEstado(EstadoSimulacion estado) {
 		this.estado = estado;
 	}

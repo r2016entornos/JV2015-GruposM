@@ -1,9 +1,10 @@
 package modelo;
 
+import java.io.Serializable;
 
 import util.Formato;
 
-public class Correo {
+public class Correo implements Serializable{
 	
 	private String texto;
 	
@@ -20,7 +21,7 @@ public class Correo {
 	}
 	
 	public void setTexto(String texto) {
-		assert textoValido(texto);
+		assert esValido(texto);
 		this.texto = texto;
 	}
 	
@@ -29,7 +30,7 @@ public class Correo {
 	 * @param texto.
 	 * @return true si cumple.
 	 */
-	private boolean textoValido(String texto) {
+	public static boolean esValido(String texto) {
 		if (texto != null 
 				&& util.Formato.validar(texto, Formato.PATRON_CORREO)
 				&& correoAutentico(texto)) {
@@ -42,7 +43,7 @@ public class Correo {
 	 * Comprueba que una dirección de correo existe.
 	 * @return true si cumple.
 	 */
-	public boolean correoAutentico(String texto) {
+	private static boolean correoAutentico(String texto) {
 		// Comprueba que el correo no es falso
 		// --Pendiente--
 		return true;

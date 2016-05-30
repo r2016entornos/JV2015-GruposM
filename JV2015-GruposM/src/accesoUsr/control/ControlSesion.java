@@ -26,7 +26,8 @@ public class ControlSesion {
 		datos = GestionDatos.getInstancia();
 		vista = new VistaSesionTexto();
 		iniciarSesionUsuario(idUsr); 
-		new ControlSimulacion(sesion);
+		new ControlSimulacion(datos.obtenerSimulacionesUsuario(usrSesion.getIdUsr()).get(0));
+		datos.cerrar();
 	}
 
 	/**
@@ -45,14 +46,14 @@ public class ControlSesion {
 				credencialUsr = vista.pedirIdUsr();	
 			}
 			credencialUsr = credencialUsr.toUpperCase();
-			// Pide contraseña
+			// Pide contraseña.
 			vista.mostrar("Introduce clave acceso: ");
 			String clave = vista.pedirClaveAcceso();
 
-			// Obtiene idUsr que corresponde
+			// Obtiene idUsr que corresponde.
 			credencialUsr = datos.getEquivalenciaId(credencialUsr);	
 
-			// Busca usuario coincidente con credencial
+			// Busca usuario coincidente con credencial.
 			vista.mostrar(credencialUsr);
 			usrSesion = datos.obtenerUsuario(credencialUsr);
 			if ( usrSesion != null) {			
@@ -69,20 +70,17 @@ public class ControlSesion {
 		while (!todoCorrecto && intentos > 0);
 
 		if (todoCorrecto) {
-			// Registra sesión
-			//Crea la sesión de usuario en el sistema
+			// Registra sesión.
+			// Crea la sesión de usuario en el sistema.
 			sesion = new SesionUsuario(usrSesion, new Fecha());
 			try {
 				datos.altaSesion(sesion);
 			} catch (DatosException e) {
 				e.printStackTrace();
-			}
-			// Falta implementar la gestion de id de sesion en la 
-			// clase SesionUsuario.
-			
-			//vista.mostrar("Sesión: " + datos.obtenerSesion(id)
-			//+ '\n' + "Iniciada por: " + usrSesion.getNombre() + " "
-			//+ usrSesion.getApellidos());
+			}	
+			vista.mostrar("Sesión: " + sesion.getIdSesion()
+			+ '\n' + "Iniciada por: " + usrSesion.getNombre() + " "
+			+ usrSesion.getApellidos());
 		}
 		else {	
 			vista.mostrar("Fin de programa...");

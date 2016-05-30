@@ -1,9 +1,17 @@
 package modelo;
-
+/** 
+ * Proyecto: Juego de la vida.
+ *  Es un punto del espacio donde se ubica un Patron de celulas, 
+ *  según el modelo2.1
+ *  @since: prototipo2.1
+ *  @source: Posicion.java 
+ *  @version: 1.0 - 24/04/2016
+ *  @author: ajp
+ */
 
 import java.io.Serializable;
 
-public class Posicion  implements Serializable {
+public class Posicion implements Serializable {
 
 	//Atributos
 	private int x;

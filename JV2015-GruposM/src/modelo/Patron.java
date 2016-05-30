@@ -1,5 +1,4 @@
 package modelo;
-
 /** 
  * Proyecto: Juego de la vida.
  *  Implementa el concepto de Patron de celdas según el modelo2.1
@@ -52,6 +51,23 @@ public class Patron implements Serializable {
 		for (int i=0; i <p.esquema.length; i++) {
 			this.esquema[i] = Arrays.copyOf(p.esquema[i], p.esquema[i].length);
 		}                                
+	}
+	
+	 /** Constructor especial.
+	 * Establece el valor inicial de cada uno de los atributos.
+	 * Recibe parámetros para inicializa los atributos.
+	 * Utiliza métodos set... para la posible verificación.
+	 * @param nombre
+	 * @param filas
+	 * @param columnas
+	 * @param imagenPatron
+	 */
+	public Patron(String nombre, int filas, int columnas, String imagenPatron) {
+		setNombre(nombre);
+		
+		byte [][] esquema = new byte [filas][columnas];
+		//...
+		setEsquema(esquema);
 	}
 	
 	/**

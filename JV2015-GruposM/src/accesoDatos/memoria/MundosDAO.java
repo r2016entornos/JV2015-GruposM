@@ -1,20 +1,4 @@
 package accesoDatos.memoria;
-/** 
- * Proyecto: Juego de la vida.
- *  Resuelve todos los aspectos del almacenamiento del
- *  DTO Mundo utilizando un ArrayList no persistentes; sólo en memoria.
- *  Colabora en el patron Fachada.
- *  @since: prototipo2.2
- *  @source: MundosDAO.java 
- *  @version: 1.0 - 2016/05/23 
- *  @author: ajp
- */
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import accesoDatos.DatosException;
@@ -80,6 +64,16 @@ public class MundosDAO implements OperacionesDAO {
 	}
 
 	/**
+	 * Búsqueda de Usuario dado un objeto, reenvía al método que utiliza nombre.
+	 * @param obj - el Mundo a buscar.
+	 * @return - el Mundo encontrado; null si no existe.
+	 */
+	@Override
+	public Mundo obtener(Object obj)  {
+		return this.obtener(((Mundo) obj).getNombre());
+	}
+	
+	/**
 	 * Búsqueda de Mundo.
 	 * @param mundo - el Mundo a buscar.
 	 * @return - el Mundo encontrado o null si no existe.
@@ -119,8 +113,6 @@ public class MundosDAO implements OperacionesDAO {
 			}
 		}	
 		datosMundos.add(inicio, mundo); 	// Inserta el mundo en orden.		
-
-		
 	}
 
 	@Override
@@ -141,4 +133,4 @@ public class MundosDAO implements OperacionesDAO {
 		return null;
 	}
 
-}
+} // class
