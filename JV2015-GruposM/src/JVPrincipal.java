@@ -7,14 +7,12 @@
  * @author: ajp
  */
 
-import accesoDatos.Datos;
 import accesoDatos.test.DatosPrueba;
 import accesoUsr.control.ControlSesion;
 
 public class JVPrincipal {	
 	public static void main(String[] args) {					
-		DatosPrueba.cargarSimulacionPrueba();
-			
+		DatosPrueba.cargarSimulacionPrueba();		
 		if (args.length == 0) { 
 			new ControlSesion();
 		}	

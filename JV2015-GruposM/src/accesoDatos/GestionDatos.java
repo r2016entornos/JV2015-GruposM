@@ -10,7 +10,7 @@ package accesoDatos;
 
 import java.util.List;
 
-import accesoDatos.memoria.*;
+import accesoDatos.fichero.*;
 import modelo.*;
 
 public class GestionDatos {
@@ -55,6 +55,18 @@ public class GestionDatos {
 	 *  Cierra almacenes de datos.
 	 */
 	public void cerrar() {
+		guardarDatos();
+	}
+
+	/**
+	 *  actualiza ficheros de datos.
+	 */
+	private void guardarDatos() {
+		usuariosDAO.guardarDatos();
+		sesionesDAO.guardarDatos();
+		patronesDAO.guardarDatos();
+		mundosDAO.guardarDatos();
+		simulacionesDAO.guardarDatos();	
 	}
 
 	// FACHADA usuariosDAO
