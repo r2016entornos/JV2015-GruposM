@@ -1,8 +1,17 @@
 package accesoDatos.fichero;
-
+/** 
+ * Proyecto: Juego de la vida.
+ *  Resuelve todos los aspectos del almacenamiento del
+ *  DTO Simulacion utilizando un ArrayList y un Hashtable
+ *  persistentes en ficheros.
+ *  Colabora en el patron Fachada.
+ *  @since: prototipo2.1
+ *  @source: SimulacionesDAO.java 
+ *  @version: 1.2 - 2016/06/05
+ *  @author: ajp
+ */
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -21,31 +30,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 import accesoDatos.DatosException;
+import accesoDatos.GestionDatos;
 import accesoDatos.OperacionesDAO;
-import accesoDatos.test.DatosPrueba;
+import config.Configuracion;
+import modelo.Contraseña;
+import modelo.Correo;
+import modelo.Direccion;
+import modelo.Mundo;
+import modelo.Nif;
 import modelo.SesionUsuario;
 import modelo.Simulacion;
+import modelo.Simulacion.EstadoSimulacion;
+import modelo.Usuario;
+import modelo.SesionUsuario.EstadoSesion;
+import modelo.Usuario.RolUsuario;
+import util.Fecha;
 
 public class SimulacionesDAO implements OperacionesDAO, Persistente {
 	
-	// Requerido por el Singleton 
+	// Requerido por el Singleton. 
 	private static SimulacionesDAO instancia;
 	
-	// Elemento de almacenamiento 
-	private ArrayList<Simulacion> datosSimulaciones;
-	private File fSimulaciones;
+	// Elemento de almacenamiento.
+	private static ArrayList<Simulacion> datosSimulaciones;
+	private static File fSimulaciones;
 	
 	/**
 	 * Constructor por defecto de uso interno.
 	 * Sólo se ejecutará una vez.
+	 * @throws DatosException 
 	 */
-	private SimulacionesDAO() {
+	private SimulacionesDAO() throws DatosException {
 		datosSimulaciones = new ArrayList<Simulacion>();
-		fSimulaciones = new File("simulaciones.dat");
-		try {
-			recuperarDatos();
-		} catch (DatosException e) {
-		}
+		fSimulaciones = new File(Configuracion.get().getProperty("simulaciones.nombreFichero"));
+		recuperarDatos();
 	}
 
 	/**
@@ -57,9 +75,26 @@ public class SimulacionesDAO implements OperacionesDAO, Persistente {
 	 */
 	public static SimulacionesDAO getInstancia() {
 		if (instancia == null) {
-			instancia = new SimulacionesDAO();
+			try {
+				instancia = new SimulacionesDAO();
+			} catch (DatosException e) {
+				// No hay datos.
+				cargarPredeterminados();
+			}
 		}
 		return instancia;
+	}
+	
+	/**
+	 *  Método para generar de datos predeterminados.
+	 */
+	private static void cargarPredeterminados() {
+		// Obtiene usuario y mundo predeterminados.
+		MundosDAO.getInstancia();
+		Mundo mundoDemo = MundosDAO.getInstancia().obtener("Demo0");
+		Simulacion simulacionDemo = new Simulacion(new Usuario(), new Fecha(), mundoDemo, EstadoSimulacion.PREPARADA);
+		datosSimulaciones.add(simulacionDemo);
+		guardarDatos(datosSimulaciones);
 	}
 	
 	//OPERACIONES DE PERSISTENCIA.
@@ -85,10 +120,25 @@ public class SimulacionesDAO implements OperacionesDAO, Persistente {
 	}
 	
 	/**
+	 *  Cierra datos.
+	 */
+	@Override
+	public void cerrar() {
+		guardarDatos();
+	}
+	
+	/**
 	 *  Guarda el Arraylist de simulaciones de usuarios en fichero.
 	 */
 	@Override
 	public void guardarDatos() {
+		guardarDatos(datosSimulaciones);
+	}
+	
+	/**
+	 *  Guarda la lista recibida en el fichero de datos.
+	 */
+	private static void guardarDatos(List<Simulacion> listaSimulaciones) {
 		try {
 			FileOutputStream fosSimulaciones = new FileOutputStream(fSimulaciones);
 			ObjectOutputStream oosSesiones = new ObjectOutputStream(fosSimulaciones);
@@ -96,9 +146,7 @@ public class SimulacionesDAO implements OperacionesDAO, Persistente {
 			oosSesiones.flush();
 			oosSesiones.close();
 		} 
-		catch (IOException e) {
-			e.printStackTrace();
-		}
+		catch (IOException e) {}	
 	}
 	
 	// OPERACIONES DAO
@@ -142,7 +190,7 @@ public class SimulacionesDAO implements OperacionesDAO, Persistente {
 	 * @param idUsr - el identificador de usuario a buscar.
 	 * @return - Sublista con las simulaciones encontrada; null si no existe ninguna.
 	 */
-	public List<Simulacion> obtenerSimulacionesUsuario(String idUsr) {
+	public List<Simulacion> obtenerTodasMismoUsr(String idUsr) {
 		int inicio = 0;
 		int fin = datosSimulaciones.size() - 1;
 		int medio;
@@ -151,7 +199,7 @@ public class SimulacionesDAO implements OperacionesDAO, Persistente {
 			medio = (inicio + fin) / 2;
 			comparacion = datosSimulaciones.get(medio).getUsr().getIdUsr().compareToIgnoreCase(idUsr);
 			if (comparacion == 0) {
-				return generarLista(inicio);
+					return separarSimulacionesUsr(inicio);
 			}
 			if (comparacion < 0) { 
 				inicio = medio + 1;
@@ -168,7 +216,7 @@ public class SimulacionesDAO implements OperacionesDAO, Persistente {
 	 * @param inicio - el indice de una simulación ya encontrada.
 	 * @return - Sublista con las simulaciones encontrada; null si no existe ninguna.
 	 */
-	private List<Simulacion> generarLista(int inicio) {
+	private List<Simulacion> separarSimulacionesUsr(int inicio) {
 		int primera = inicio;
 		String idUsr = datosSimulaciones.get(inicio).getUsr().getIdUsr();
 		// Localiza primera simulación del mismo usuario.
@@ -203,7 +251,7 @@ public class SimulacionesDAO implements OperacionesDAO, Persistente {
 			medio = (inicio + fin) / 2;				
 			comparacion = datosSimulaciones.get(medio).getIdSimulacion().compareToIgnoreCase(simulacion.getIdSimulacion());
 			if (comparacion == 0) {
-				throw new DatosException("La Simulacion ya existe...");      
+				throw new DatosException("ALTA: La Simulacion ya existe...");      
 			}
 			if (comparacion < 0) {			// id va después alfabéticamente 
 				inicio = medio + 1;
@@ -215,21 +263,59 @@ public class SimulacionesDAO implements OperacionesDAO, Persistente {
 		datosSimulaciones.add(inicio, simulacion); 	// Inserta la simulación en orden.
 	}
 
+	/**
+	 * Elimina el objeto, dado el id utilizado para el almacenamiento.
+	 * @param idSimulacion - identifcador de la Simulacion a eliminar.
+	 * @return - el Simulacion eliminada.
+	 * @throws DatosException - si no existe.
+	 */
 	@Override
-	public Object baja(String id) throws DatosException {
-		
-		return null;
+	public Simulacion baja(String idSimulacion) throws DatosException {
+		Simulacion simulacion = obtener(idSimulacion);
+		if (simulacion != null) {
+			// Elimina la simulacion del almacen de datos.
+			datosSimulaciones.remove(simulacion);
+		}	
+		else {
+			throw new DatosException("BAJA: La Simulacion no existe...");
+		}
+		return simulacion;
 	}
-
+	
+	/**
+	 *  Actualiza datos de una Simulacion reemplazando el almacenado por el recibido.
+	 *	@param obj - Patron con las modificaciones.
+	 *  @throws DatosException - si no existe.
+	 */
 	@Override
 	public void actualizar(Object obj) throws DatosException {
-		
+		Simulacion simulacion = (Simulacion) obj;
+		Simulacion simulacionAux = obtener(simulacion);
+		if (simulacionAux != null) {	
+			simulacionAux.setUsr(simulacion.getUsr());
+			simulacionAux.setFecha(simulacion.getFecha());
+			//simulacionAux.(simulacion.getEstado());
+			// Actualización
+			datosSimulaciones.set(datosSimulaciones.indexOf(simulacion), simulacionAux);
+		}	
+		else {
+			throw new DatosException("ACTUALIZAR: La Simulaciones no existe...");
+		}
 	}
 
+	/**
+	 * Obtiene el listado de todos las simulaciones almacenadas.
+	 * @return el texto con el volcado de datos.
+	 */
 	@Override
 	public String listarDatos() {
-		
-		return null;
-	}	
+		StringBuilder listado = new StringBuilder();
+		for (Simulacion simulacion: datosSimulaciones) {
+			if (simulacion != null) {
+				listado.append("\n" + simulacion);
+			}
+		}
+		return listado.toString();
+	}
 	
 } //class

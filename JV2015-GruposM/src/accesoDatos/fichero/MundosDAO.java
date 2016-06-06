@@ -1,18 +1,33 @@
 package accesoDatos.fichero;
+/** 
+ * Proyecto: Juego de la vida.
+ *  Resuelve todos los aspectos del almacenamiento del
+ *  DTO Mundo utilizando un ArrayList y un Hashtable
+ *  persistentes en ficheros.
+ *  Colabora en el patron Fachada.
+ *  @since: prototipo2.1
+ *  @source: MundosDAO.java 
+ *  @version: 1.2 - 2016/06/05 
+ *  @author: ajp
+ */
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Properties;
 
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
-import accesoDatos.test.DatosPrueba;
+import accesoDatos.db4o.Conexion;
+import config.Configuracion;
 import modelo.Mundo;
-import modelo.SesionUsuario;
+import modelo.Patron;
+import modelo.Posicion;
 
 public class MundosDAO implements OperacionesDAO, Persistente {
 
@@ -20,19 +35,18 @@ public class MundosDAO implements OperacionesDAO, Persistente {
 	private static MundosDAO instancia;
 
 	// Elementos de almacenamiento.
-	private ArrayList<Mundo> datosMundos;
-	private File fMundos;
+	private static ArrayList<Mundo> datosMundos;
+	private static File fMundos;
 
 	/**
 	 * Constructor por defecto de uso interno.
 	 * Sólo se ejecutará una vez.
+	 * @throws DatosException 
 	 */
-	private MundosDAO() {
+	private MundosDAO() throws DatosException {
 		datosMundos = new ArrayList<Mundo>();
-		fMundos = new File("mundos.dat");
-		try {
-			recuperarDatos();
-		} catch (DatosException e) {}
+		fMundos = new File(Configuracion.get().getProperty("mundos.nombreFichero"));
+		recuperarDatos();
 	}
 
 	/**
@@ -44,9 +58,39 @@ public class MundosDAO implements OperacionesDAO, Persistente {
 	 */
 	public static MundosDAO getInstancia() {
 		if (instancia == null) {
-			instancia = new MundosDAO();
+			try {
+				instancia = new MundosDAO();
+			} catch (DatosException e) {
+				// No hay datos.
+				cargarPedeterminados();
+			}
 		}
 		return instancia;
+	}
+
+	/**
+	 *  Método para generar de datos predeterminados.
+	 */
+	private static void cargarPedeterminados() {
+		// En este array los 0 indican celdas con célula muerta y los 1 vivas
+		byte[][] espacioDemo =  new byte[][]{ 
+			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+			{ 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+			{ 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0 }, //
+			{ 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 
+			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 
+			{ 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0 }, // 
+			{ 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0 }, //
+			{ 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0 }, // Given:
+			{ 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 1x Planeador
+			{ 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 1x Flip-Flop
+			{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }  // 1x Still Life
+		};
+		Mundo mundoDemo = new Mundo("Demo0", new ArrayList<Integer>(), 
+									new Hashtable<Patron,Posicion>(), espacioDemo);
+		datosMundos.add(mundoDemo);
+		guardarDatos(datosMundos);
 	}
 
 	//OPERACIONES DE PERSISTENCIA.
@@ -72,18 +116,33 @@ public class MundosDAO implements OperacionesDAO, Persistente {
 	}
 	
 	/**
+	 *  Cierra datos.
+	 */
+	@Override
+	public void cerrar() {
+		guardarDatos();
+	}
+	
+	/**
 	 *  Guarda el Arraylist de mundos en fichero.
 	 */
 	@Override
 	public void guardarDatos() {
+		guardarDatos(datosMundos);
+	}
+	
+	/**
+	 *  Guarda la lista recibida en el fichero de datos.
+	 */
+	private static void guardarDatos(List<Mundo> listaMundos) {
 		try {
 			FileOutputStream fosMundos = new FileOutputStream(fMundos);
 			ObjectOutputStream oosSesiones = new ObjectOutputStream(fosMundos);
-			oosSesiones.writeObject(datosMundos);		
+			oosSesiones.writeObject(listaMundos);		
 			oosSesiones.flush();
 			oosSesiones.close();
 		} 
-		catch (IOException e) {}
+		catch (IOException e) {}	
 	}
 
 	//OPERACIONES DAO
@@ -125,17 +184,7 @@ public class MundosDAO implements OperacionesDAO, Persistente {
 	public Mundo obtener(Object obj)  {
 		return this.obtener(((Mundo) obj).getNombre());
 	}
-
-	/**
-	 * Búsqueda de Mundo.
-	 * @param mundo - el Mundo a buscar.
-	 * @return - el Mundo encontrado o null si no existe.
-	 */
-	public Mundo buscarMundo(Mundo mundo) {
-		assert mundo != null;
-		return this.obtener(mundo.getNombre());				
-	}
-
+	
 	/**
 	 *  Alta de un objeto en el almacén de datos, 
 	 *  sin repeticiones, según el campo id previsto. 
@@ -156,7 +205,7 @@ public class MundosDAO implements OperacionesDAO, Persistente {
 			comparacion = datosMundos.get(medio).getNombre()
 					.compareToIgnoreCase(mundo.getNombre());
 			if (comparacion == 0) {			
-				throw new DatosException("El Mundo ya existe...");   				  
+				throw new DatosException("ALTA: El Mundo ya existe...");   				  
 			}		
 			if (comparacion < 0) {
 				inicio = medio + 1;
@@ -168,22 +217,60 @@ public class MundosDAO implements OperacionesDAO, Persistente {
 		datosMundos.add(inicio, mundo); 	// Inserta el mundo en orden.		
 	}
 
+	/**
+	 * Elimina el objeto, dado el id utilizado para el almacenamiento.
+	 * @param nombre - el nombre del Mundo a eliminar.
+	 * @return - el Mundo eliminado.
+	 * @throws DatosException - si no existe.
+	 */
 	@Override
-	public Object baja(String id) throws DatosException {
-
-		return null;
+	public Mundo baja(String nombre) throws DatosException {
+		Mundo mundo = obtener(nombre);
+		if (mundo != null) {
+			// Elimina el Mundo del almacen de datos.
+			datosMundos.remove(mundo);
+		}	
+		else {
+			throw new DatosException("BAJA: El Mundo no existe...");
+		}
+		return mundo;
 	}
 
+	/**
+	 *  Actualiza datos de un Mundo reemplazando el almacenado por el recibido.
+	 *	@param obj - Mundo con las modificaciones.
+	 *  @throws DatosException - si no existe.
+	 */
 	@Override
 	public void actualizar(Object obj) throws DatosException {
-
-
+		Mundo mundo = (Mundo) obj;
+		Mundo mundoAux = obtener(mundo.getNombre());
+		if (mundoAux != null) {	
+			mundoAux.setDistribucion(mundo.getDistribucion());
+			mundoAux.setEspacio(mundo.getEspacio());
+			mundoAux.setConstantes(mundo.getConstantes());
+			
+			// Actualización
+			datosMundos.set(datosMundos.indexOf(mundo), mundoAux);
+		}	
+		else {
+			throw new DatosException("ACTUALIZAR: El Mundo no existe...");
+		}
 	}
 
+	/**
+	 * Obtiene el listado de todos los objetos Mundo almacenados.
+	 * @return el texto con el volcado de datos.
+	 */
 	@Override
 	public String listarDatos() {
-		// TODO Auto-generated method stub
-		return null;
+		StringBuilder listado = new StringBuilder();
+		for (Mundo mundo: datosMundos) {
+			if (mundo != null) {
+				listado.append("\n" + mundo);
+			}
+		}
+		return listado.toString();
 	}
 
 } // class

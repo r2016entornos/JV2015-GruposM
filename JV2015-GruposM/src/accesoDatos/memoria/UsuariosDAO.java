@@ -1,12 +1,28 @@
 package accesoDatos.memoria;
-
+/** 
+ * Proyecto: Juego de la vida.
+ *  Resuelve todos los aspectos del almacenamiento del
+ *  DTO Usuario utilizando un ArrayList y un Hashtable.
+ *  Colabora en el patron Fachada.
+ *  @since: prototipo2.1
+ *  @source: UsuariosDAO.java 
+ *  @version: 1.2 - 2016/06/05 
+ *  @author: ajp
+ */
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
+import config.Configuracion;
+import modelo.Contraseña;
+import modelo.Correo;
+import modelo.Direccion;
+import modelo.Nif;
 import modelo.Usuario;
+import modelo.Usuario.RolUsuario;
+import util.Fecha;
 
 public class UsuariosDAO  implements OperacionesDAO {
 
@@ -14,17 +30,17 @@ public class UsuariosDAO  implements OperacionesDAO {
 	private static UsuariosDAO instancia = null;
 
 	// Elementos de almacenamiento.
-	private ArrayList<Usuario> datosUsuarios;
-	private Map<String,String> equivalenciasId;
+	private static ArrayList<Usuario> datosUsuarios;
+	private static Map<String,String> equivalenciasId;
 
 	/**
 	 * Constructor por defecto de uso interno.
 	 * Sólo se ejecutará una vez.
-	 * @throws DatosException 
 	 */
-	private UsuariosDAO() {
+	private UsuariosDAO()  {
 		datosUsuarios = new ArrayList<Usuario>();
 		equivalenciasId = new Hashtable<String, String>();
+		cargarPredeterminados();
 	}
 
 	/**
@@ -33,7 +49,6 @@ public class UsuariosDAO  implements OperacionesDAO {
 	 *  Utiliza inicialización diferida.
 	 *  Sólo se crea una vez; instancia única -patrón singleton-
 	 *  @return instancia
-	 * @throws DatosException 
 	 */
 	public static UsuariosDAO getInstancia() {
 		if (instancia == null) {
@@ -42,6 +57,36 @@ public class UsuariosDAO  implements OperacionesDAO {
 		return instancia;
 	}
 
+	/**
+	 *  Método para generar de datos predeterminados.
+	 */
+	private static void cargarPredeterminados() {
+		String nombreUsr = Configuracion.get().getProperty("usuario.admin");
+		String password = Configuracion.get().getProperty("usuario.passwordPredeterminada");	
+		Usuario usrPredeterminado = new Usuario(new Nif("76543210A"), nombreUsr, "Admin Admin", 
+					new Direccion("30012", "Iglesia", "0", "Murcia", "España"), 
+					new Correo("jv.admin" + "@gmail.com"), new Fecha(), 
+					new Fecha(), new Contraseña(password), RolUsuario.ADMINISTRADOR);
+		datosUsuarios.add(usrPredeterminado);
+		registrarEquivalenciaId(usrPredeterminado);
+		nombreUsr = Configuracion.get().getProperty("usuario.invitado");
+		password = Configuracion.get().getProperty("usuario.passwordPredeterminada");	
+		usrPredeterminado = new Usuario(new Nif("06543210I"), nombreUsr, "Invitado Invitado", 
+					new Direccion("30012", "Iglesia", "0", "Murcia", "España"), 
+					new Correo("jv.invitado" + "@gmail.com"), new Fecha(), 
+					new Fecha(), new Contraseña(password), RolUsuario.INVITADO);
+		datosUsuarios.add(usrPredeterminado);
+		registrarEquivalenciaId(usrPredeterminado);
+	}
+
+	/**
+	 *  Cierra datos.
+	 */
+	@Override
+	public void cerrar() {
+		// Nada que hacer si no hay persistencia.
+	}
+	
 	//OPERACIONES DAO
 	/**
 	 * Obtiene por búsqueda binaria un Usuario dado su id.
@@ -108,7 +153,7 @@ public class UsuariosDAO  implements OperacionesDAO {
 			comparacion = datosUsuarios.get(medio).getIdUsr()
 					.compareToIgnoreCase(usr.getIdUsr());
 			if (comparacion == 0) {			
-				throw new DatosException("El Usuario ya existe...");   				  
+				throw new DatosException("ALTA: El Usuario ya existe...");   				  
 			}		
 			if (comparacion < 0) {
 				inicio = medio + 1;
@@ -125,7 +170,7 @@ public class UsuariosDAO  implements OperacionesDAO {
 	 * Añade una nueva equivalencias para idUsr.
 	 * @param usr
 	 */
-	private void registrarEquivalenciaId(Usuario usr) {	 
+	private static void registrarEquivalenciaId(Usuario usr) {	 
 		assert usr != null;
 		equivalenciasId.put(usr.getIdUsr(), usr.getIdUsr());
 		equivalenciasId.put(usr.getNif().getTexto(), usr.getIdUsr());
@@ -162,7 +207,7 @@ public class UsuariosDAO  implements OperacionesDAO {
 				fin = medio - 1; 
 			}
 		}
-		throw new DatosException("El Usuario no existe...");
+		throw new DatosException("BAJA: El Usuario no existe...");
 	} 
 
 	/**
@@ -197,7 +242,7 @@ public class UsuariosDAO  implements OperacionesDAO {
 			}
 		}
 		if (noExisteUsuario) {
-			throw new DatosException("No existe el Usuario...");
+			throw new DatosException("ACTUALIZAR: No existe el Usuario...");
 		}
 	} 
 
@@ -221,27 +266,13 @@ public class UsuariosDAO  implements OperacionesDAO {
 	 */
 	@Override
 	public String listarDatos() {
-		StringBuilder sb = new StringBuilder();
-		for (Usuario u: datosUsuarios) {
-			if (u != null) {
-				sb.append("\n" + u); 
+		StringBuilder listado = new StringBuilder();
+		for (Usuario usuario: datosUsuarios) {
+			if (usuario != null) {
+				listado.append("\n" + usuario); 
 			}
 		}
-		return sb.toString();
-	}
-
-	/**
-	 * Serializa en una cadena de caracteres los datos de todos los usuarios almacenados.
-	 * @return el texto
-	 */
-	public String datosUsuariosTexto() {
-		StringBuilder aux = new StringBuilder();
-		for (Usuario u: datosUsuarios) {
-			if (u != null) {
-				aux.append(u.toString() + ';');
-			}
-		}
-		return aux.toString();
+		return listado.toString();
 	}
 
 } //class

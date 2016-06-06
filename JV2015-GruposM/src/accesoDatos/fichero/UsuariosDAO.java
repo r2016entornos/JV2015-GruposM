@@ -6,28 +6,32 @@ package accesoDatos.fichero;
  *  DTO Usuario utilizando un ArrayList y un Hashtable
  *  persistentes en ficheros.
  *  Colabora en el patron Fachada.
- *  @since: prototipo2.2
+ *  @since: prototipo2.1
  *  @source: UsuariosDAO.java 
- *  @version: 1.0 - 2016/05/23 
+ *  @version: 1.2 - 2016/06/05 
  *  @author: ajp
  */
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
-import modelo.SesionUsuario;
-import modelo.Usuario;
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
-import accesoDatos.test.DatosPrueba;
+import config.Configuracion;
+import modelo.Contraseña;
+import modelo.Correo;
+import modelo.Direccion;
+import modelo.Nif;
+import modelo.Usuario;
+import modelo.Usuario.RolUsuario;
+import util.Fecha;
 
 public class UsuariosDAO  implements OperacionesDAO, Persistente {
 
@@ -35,25 +39,22 @@ public class UsuariosDAO  implements OperacionesDAO, Persistente {
 	private static UsuariosDAO instancia = null;
 
 	// Elementos de almacenamiento.
-	private ArrayList<Usuario> datosUsuarios;
-	private Map<String,String> equivalenciasId;
-	private File fUsuarios;
-	private File fEquivalId;
+	private static ArrayList<Usuario> datosUsuarios;
+	private static Map<String,String> equivalenciasId;
+	private static File fUsuarios;
+	private static File fEquivalId;
 
 	/**
 	 * Constructor por defecto de uso interno.
 	 * Sólo se ejecutará una vez.
+	 * @throws DatosException 
 	 */
-	private UsuariosDAO() {
+	private UsuariosDAO() throws DatosException {
 		datosUsuarios = new ArrayList<Usuario>();
 		equivalenciasId = new Hashtable<String, String>();
-		fUsuarios = new File("usuarios.dat");
-		fEquivalId = new File("equivalId.dat");
-		try {
-			recuperarDatos();
-		} catch (DatosException e) {
-		}
-	
+		fUsuarios = new File(Configuracion.get().getProperty("usuarios.nombreFichero"));
+		fEquivalId = new File(Configuracion.get().getProperty("equivalenciasId.nombreFichero"));
+		recuperarDatos();
 	}
 
 	/**
@@ -65,11 +66,40 @@ public class UsuariosDAO  implements OperacionesDAO, Persistente {
 	 */
 	public static UsuariosDAO getInstancia() {
 		if (instancia == null) {
-			instancia = new UsuariosDAO();
+			try {
+				instancia = new UsuariosDAO();
+			} catch (DatosException e) {
+				// No hay datos.
+				cargarPredeterminados();
+			}
 		}
 		return instancia;
 	}
 
+	/**
+	 *  Método para generar de datos predeterminados.
+	 */
+	private static void cargarPredeterminados() {
+		String nombreUsr = Configuracion.get().getProperty("usuario.admin");
+		String password = Configuracion.get().getProperty("usuario.passwordPredeterminada");	
+		Usuario usrPredeterminado = new Usuario(new Nif("76543210A"), nombreUsr, "Admin Admin", 
+					new Direccion("30012", "Iglesia", "0", "Murcia", "España"), 
+					new Correo("jv.admin" + "@gmail.com"), new Fecha(), 
+					new Fecha(), new Contraseña(password), RolUsuario.ADMINISTRADOR);
+		datosUsuarios.add(usrPredeterminado);
+		registrarEquivalenciaId(usrPredeterminado);
+		nombreUsr = Configuracion.get().getProperty("usuario.invitado");
+		password = Configuracion.get().getProperty("usuario.passwordPredeterminada");	
+		usrPredeterminado = new Usuario(new Nif("06543210I"), nombreUsr, "Invitado Invitado", 
+					new Direccion("30012", "Iglesia", "0", "Murcia", "España"), 
+					new Correo("jv.invitado" + "@gmail.com"), new Fecha(), 
+					new Fecha(), new Contraseña(password), RolUsuario.INVITADO);
+		datosUsuarios.add(usrPredeterminado);
+		registrarEquivalenciaId(usrPredeterminado);
+		guardarDatos(datosUsuarios);
+		guardarDatos(equivalenciasId);
+	}
+	
 	//OPERACIONES DE PERSISITENCIA.
 	/**
 	 *  Recupera el Arraylist usuarios almacenados en fichero. 
@@ -97,27 +127,49 @@ public class UsuariosDAO  implements OperacionesDAO, Persistente {
 	}
 
 	/**
+	 *  Cierra datos.
+	 */
+	@Override
+	public void cerrar() {
+		guardarDatos();
+	}
+	
+	/**
 	 *  Guarda el Arraylist de usuarios y el Hashtable de equivalencias de idUsr en ficheros.
 	 */
 	@Override
 	public void guardarDatos() {
-
+		guardarDatos(datosUsuarios);
+		guardarDatos(equivalenciasId);
+	} 
+	
+	/**
+	 *  Guarda la lista recibida en el fichero de datos.
+	 */
+	private static void guardarDatos(List<Usuario> listaUsuarios) {
 		try {
 			FileOutputStream fosUsaurios = new FileOutputStream(fUsuarios);
-			FileOutputStream fosEquivalId = new FileOutputStream(fEquivalId);
 			ObjectOutputStream oosUsuarios = new ObjectOutputStream(fosUsaurios);
-			ObjectOutputStream oosEquivalId = new ObjectOutputStream(fosEquivalId);
 			oosUsuarios.writeObject(datosUsuarios);
-			oosEquivalId.writeObject(equivalenciasId);
 			oosUsuarios.flush();
-			oosEquivalId.flush();
 			oosUsuarios.close();
+		} 
+		catch (IOException e) {}
+	}
+	
+	/**
+	 *  Guarda la lista recibida en el fichero de datos.
+	 */
+	private static void guardarDatos(Map<String,String> MapaEquivalencias) {
+		try {
+			FileOutputStream fosEquivalId = new FileOutputStream(fEquivalId);
+			ObjectOutputStream oosEquivalId = new ObjectOutputStream(fosEquivalId);
+			oosEquivalId.writeObject(equivalenciasId);
+			oosEquivalId.flush();
 			oosEquivalId.close();
 		} 
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-	} 
+		catch (IOException e) {}
+	}
 	
 	//OPERACIONES DAO
 	/**
@@ -129,7 +181,7 @@ public class UsuariosDAO  implements OperacionesDAO, Persistente {
 	public Usuario obtener(String idUsr) {
 		int comparacion;
 		int inicio = 0;
-		int fin = datosUsuarios.size() - 1;
+		int fin = datosUsuarios.size()-1;
 		int medio;
 		while (inicio <= fin) {
 			medio = (inicio + fin) / 2;
@@ -156,7 +208,7 @@ public class UsuariosDAO  implements OperacionesDAO, Persistente {
 	public Usuario obtener(Object obj)  {
 		return this.obtener(((Usuario) obj).getIdUsr());
 	}	
-
+	
 	/**
 	 * @param id - la clave alternativa. 
 	 * @return - El idUsr equivalente.
@@ -164,7 +216,7 @@ public class UsuariosDAO  implements OperacionesDAO, Persistente {
 	public String obtenerEquivalencia(String id) {
 		return equivalenciasId.get(id);
 	}
-
+	
 	/**
 	 *  Alta de un nuevo usuario en orden y sin repeticiones según el campo idUsr. 
 	 *  Localiza previamente la posición que le corresponde por búsqueda binaria.
@@ -185,7 +237,7 @@ public class UsuariosDAO  implements OperacionesDAO, Persistente {
 			comparacion = datosUsuarios.get(medio).getIdUsr()
 					.compareToIgnoreCase(usr.getIdUsr());
 			if (comparacion == 0) {			
-				throw new DatosException("El Usuario ya existe...");   				  
+				throw new DatosException("ALTA: El Usuario ya existe...");   				  
 			}		
 			if (comparacion < 0) {
 				inicio = medio + 1;
@@ -202,7 +254,7 @@ public class UsuariosDAO  implements OperacionesDAO, Persistente {
 	 * Añade una nueva equivalencias para idUsr.
 	 * @param usr
 	 */
-	private void registrarEquivalenciaId(Usuario usr) {	 
+	private static void registrarEquivalenciaId(Usuario usr) {	 
 		assert usr != null;
 		equivalenciasId.put(usr.getIdUsr(), usr.getIdUsr());
 		equivalenciasId.put(usr.getNif().getTexto(), usr.getIdUsr());
@@ -239,7 +291,7 @@ public class UsuariosDAO  implements OperacionesDAO, Persistente {
 				fin = medio - 1; 
 			}
 		}
-		throw new DatosException("El Usuario no existe...");
+		throw new DatosException("BAJA: El Usuario no existe...");
 	} 
 
 	/**
@@ -274,7 +326,7 @@ public class UsuariosDAO  implements OperacionesDAO, Persistente {
 			}
 		}
 		if (noExisteUsuario) {
-			throw new DatosException("No existe el Usuario...");
+			throw new DatosException("ACTUALIZAR: No existe el Usuario...");
 		}
 	} 
 
@@ -298,27 +350,13 @@ public class UsuariosDAO  implements OperacionesDAO, Persistente {
 	 */
 	@Override
 	public String listarDatos() {
-		StringBuilder sb = new StringBuilder();
-		for (Usuario u: datosUsuarios) {
-			if (u != null) {
-				sb.append("\n" + u); 
+		StringBuilder listado = new StringBuilder();
+		for (Usuario usuario: datosUsuarios) {
+			if (usuario != null) {
+				listado.append("\n" + usuario); 
 			}
 		}
-		return sb.toString();
-	}
-
-	/**
-	 * Serializa en una cadena de caracteres los datos de todos los usuarios almacenados.
-	 * @return el texto
-	 */
-	public String datosUsuariosTexto() {
-		StringBuilder aux = new StringBuilder();
-		for (Usuario u: datosUsuarios) {
-			if (u != null) {
-				aux.append(u.toString() + ';');
-			}
-		}
-		return aux.toString();
+		return listado.toString();
 	}
 
 } //class
