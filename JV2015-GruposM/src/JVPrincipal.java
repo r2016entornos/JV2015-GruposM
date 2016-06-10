@@ -7,22 +7,15 @@
  * @author: ajp
  */
 
-import java.util.Date;
-import java.util.Scanner;
-
-import accesoDato.Datos;
-import accesoUsr.Presentacion;
-import modelo.*;
+import accesoUsr.control.ControlSesion;
 
 public class JVPrincipal {	
-	public static void main(String[] args) {				
-		Datos datos = new Datos();
-		Presentacion presentacion = new Presentacion();
-		
-		presentacion.mostrar(datos.textoDatosUsuarios());
-
-		if (presentacion.iniciarSesion(datos)) {
-			presentacion.arrancarSimulacion();
+	public static void main(String[] args) {								
+		if (args.length == 0) { 
+			new ControlSesion();
+		}	
+		else {
+			new ControlSesion(args[0]);
 		}
 	}
 

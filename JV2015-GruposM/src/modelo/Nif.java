@@ -1,9 +1,10 @@
 package modelo;
 
+import java.io.Serializable;
 
 import util.Formato;
 
-public class Nif { 
+public class Nif implements Serializable { 
 	
 	// Atributo
 	private String texto;
@@ -22,7 +23,7 @@ public class Nif {
 	 * Constructor por defecto.
 	 */
 	public Nif() {
-		this("00000000A");
+		this("00000000I");
 	}
 
 	/**

@@ -1,6 +1,8 @@
 package modelo;
 
+import java.io.Serializable;
 
+import config.Configuracion;
 import util.Fecha;
 
 /** Proyecto: Juego de la vida.
@@ -12,7 +14,7 @@ import util.Fecha;
  *  @author: ajp
  */
 
-public class Usuario  extends Persona {
+public class Usuario extends Persona implements Serializable {
 
 	public enum RolUsuario {
 		INVITADO, 
@@ -50,7 +52,7 @@ public class Usuario  extends Persona {
 	 * Llama al constructor convencional de la propia clase.
 	 */
 	public Usuario(){
-		this(new Nif(), "Nombre", "Apellido Apellido", 
+		this(new Nif(), Configuracion.get().getProperty("usuario.invitado"), "Invitado Invitado", 
 				new Direccion(), new Correo(), new Fecha(), 
 				new Fecha(), new Contraseña(), RolUsuario.INVITADO);
 	}

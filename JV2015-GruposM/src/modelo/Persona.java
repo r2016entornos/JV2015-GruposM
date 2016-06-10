@@ -1,5 +1,6 @@
 package modelo;
 
+import java.io.Serializable;
 
 import util.Fecha;
 import util.Formato;
@@ -12,7 +13,7 @@ import util.Formato;
  *  @author: ajp
  */
 
-public  abstract class Persona {
+public class  Persona implements Serializable {
 
 	// Atributos	
 	protected Nif nif;
@@ -37,6 +38,27 @@ public  abstract class Persona {
 		setDomicilio(domicilio);
 		setCorreo(correo);
 		setFechaNacimiento(fechaNacimiento);
+	}
+
+	/**
+	 * Constructor por defecto.
+	 * Establece el valor inicial, por defecto, de cada uno de los atributos.
+	 * Llama al constructor convencional de la propia clase.
+	 */
+	public Persona(){
+		this(new Nif(), "Nombre", "Apellido Apellido", 
+				new Direccion(), new Correo(), new Fecha());
+	}
+
+	/**
+	 * Constructor copia.
+	 * Establece el valor inicial de cada uno de los atributos a partir de
+	 * los valores obtenidos de un objeto de su misma clase, recibido como parámetro.
+	 * Llama al constructor convencional de la propia clase.
+	 */
+	public Persona(Persona usr) {
+		this(usr.nif, usr.nombre, usr.apellidos, 
+				usr.domicilio, usr.correo, usr.fechaNacimiento);
 	}
 
 	// Métodos de acceso.
@@ -153,6 +175,7 @@ public  abstract class Persona {
 	 */
 	@Override
 	public String toString() {
+	
 		return String.format(
 				"\n nif: \t\t%s,"
 				+ "\n nombre: \t%s,"
